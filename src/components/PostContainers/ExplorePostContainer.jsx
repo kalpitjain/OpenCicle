@@ -31,6 +31,7 @@ function ExplorePostContainer() {
         contractAbi: ShardeumConfigData.abi,
       };
     }
+
     const contract = new ethers.Contract(
       openCircleContract.contractAddress,
       openCircleContract.contractAbi,

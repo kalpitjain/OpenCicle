@@ -33,11 +33,13 @@ function Following() {
         contractAbi: ShardeumConfigData.abi,
       };
     }
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    const signer = provider.getSigner();
 
     const contract = new ethers.Contract(
       openCircleContract.contractAddress,
       openCircleContract.contractAbi,
-      provider
+      signer
     );
 
     const allFollowings = await contract.getFollowingAddresses(userAddress);

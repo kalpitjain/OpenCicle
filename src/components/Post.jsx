@@ -107,11 +107,13 @@ function Post(props) {
         contractAbi: ShardeumConfigData.abi,
       };
     }
+
     const contract = new ethers.Contract(
       openCircleContract.contractAddress,
       openCircleContract.contractAbi,
       provider
     );
+
     const status = await contract.isFollowing(
       userAddress,
       props.creatorAddress
@@ -212,15 +214,16 @@ function Post(props) {
       };
     } else if (chainId === 5) {
       openCircleContract = {
-        contractAddress: GoerliConfigData.MumbaiContractAddress,
+        contractAddress: GoerliConfigData.GoerliContractAddress,
         contractAbi: GoerliConfigData.abi,
       };
     } else {
       openCircleContract = {
-        contractAddress: ShardeumConfigData.MumbaiContractAddress,
+        contractAddress: ShardeumConfigData.ShardeumSphinxContractAddress,
         contractAbi: ShardeumConfigData.abi,
       };
     }
+
     const contract = new ethers.Contract(
       openCircleContract.contractAddress,
       openCircleContract.contractAbi,

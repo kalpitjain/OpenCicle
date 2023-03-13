@@ -47,13 +47,14 @@ function UserInfo(props) {
         contractAbi: ShardeumConfigData.abi,
       };
     }
+
     const contract = new ethers.Contract(
       openCircleContract.contractAddress,
       openCircleContract.contractAbi,
       provider
     );
-    const status = await contract.isFollowing(userAddress, props.address);
 
+    const status = await contract.isFollowing(userAddress, props.address);
     setFollowingStatus(status);
   }
 

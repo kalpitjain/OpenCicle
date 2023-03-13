@@ -17,7 +17,7 @@ function Edit() {
     setUserBio(event.target.value);
   }
 
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState("");
   const [displayImage, setDisplayImage] = useState(null);
   function handleImageChange(event) {
     if (event.target.files && event.target.files[0]) {
@@ -28,6 +28,29 @@ function Edit() {
   }
 
   async function uploadImage() {
+    let openCircleContract;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const chainId = await provider
+      .getNetwork()
+      .then((network) => network.chainId);
+
+    if (chainId === 80001) {
+      openCircleContract = {
+        contractAddress: PolygonConfigData.MumbaiContractAddress,
+        contractAbi: PolygonConfigData.abi,
+      };
+    } else if (chainId === 5) {
+      openCircleContract = {
+        contractAddress: GoerliConfigData.GoerliContractAddress,
+        contractAbi: GoerliConfigData.abi,
+      };
+    } else {
+      openCircleContract = {
+        contractAddress: ShardeumConfigData.ShardeumSphinxContractAddress,
+        contractAbi: ShardeumConfigData.abi,
+      };
+    }
+
     const data = new FormData();
     data.append("file", image);
     let imgUrl = "";
@@ -49,28 +72,6 @@ function Edit() {
         imgUrl = "https://gateway.ipfs.io/ipfs/" + response.data.IpfsHash;
       }
 
-      let openCircleContract;
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const chainId = await provider
-        .getNetwork()
-        .then((network) => network.chainId);
-
-      if (chainId === 80001) {
-        openCircleContract = {
-          contractAddress: PolygonConfigData.MumbaiContractAddress,
-          contractAbi: PolygonConfigData.abi,
-        };
-      } else if (chainId === 5) {
-        openCircleContract = {
-          contractAddress: GoerliConfigData.MumbaiContractAddress,
-          contractAbi: GoerliConfigData.abi,
-        };
-      } else {
-        openCircleContract = {
-          contractAddress: ShardeumConfigData.MumbaiContractAddress,
-          contractAbi: ShardeumConfigData.abi,
-        };
-      }
       await window.ethereum.request({ method: "eth_requestAccounts" });
       const signer = provider.getSigner();
 
@@ -80,14 +81,15 @@ function Edit() {
         signer
       );
 
-      const createPost = async (url) => {
+      const setUserProfileImage = async (url) => {
         const tx = await contract.setUserProfileImage(url);
         await tx.wait();
       };
 
-      await createPost(imgUrl, { gasLimit: 300000 });
-      setImage(null);
+      await setUserProfileImage(imgUrl, { gasLimit: 300000 });
+      setImage("");
       setDisplayImage(null);
+      window.location.reload();
     } catch (err) {
       console.log(err);
       alert("Unable to Upload Image");
@@ -117,6 +119,7 @@ function Edit() {
         contractAbi: ShardeumConfigData.abi,
       };
     }
+    await window.ethereum.request({ method: "eth_requestAccounts" });
     const signer = provider.getSigner();
 
     const contract = new ethers.Contract(
